@@ -7,7 +7,8 @@ Data: 2026-11-02. Serviço indicado pelo usuário: https://baixarunitv.com/.
 A página indicada anuncia `unitv_apk.apk`, versão 4.14.1, como aplicativo
 Android. Na seção sobre a origem, declara expressamente que o site é
 independente e não é o desenvolvedor oficial. As informações de versão e
-tamanho são declarações da página; o binário não foi baixado nem analisado.
+tamanho são declarações da página; a análise posterior do binário está
+registrada abaixo e encontrou uma divergência de versão.
 
 Fonte: https://baixarunitv.com/
 
@@ -58,3 +59,51 @@ instalar ou abrir uma nova versão na TV.
 Se não houver interface web compatível, será necessário acesso ao código-fonte
 ou a uma integração disponibilizada pelo fornecedor para construir um cliente
 Vega. A viabilidade final permanece em aberto.
+
+## Análise estática do APK indicado
+
+O link direto publicado em baixarunitv.com foi baixado em 2026-11-02:
+`https://files.ciinemaapk.com.br/Unitv%20Apk/unitv_apk.apk`.
+Nenhum código do APK foi executado; o arquivo não foi instalado na TV.
+O binário permanece no cache local, fora do repositório.
+
+Identificação do arquivo observado:
+
+| Campo | Valor |
+| --- | --- |
+| Tamanho | 34.252.899 bytes |
+| SHA-256 | `c2511e26b818bec76a5ccd267860e8b5fd67bf361d6afdc27b1acc97af913048` |
+| Package ID no manifesto | `com.global.unitvmobile` |
+| versionName / versionCode | `3.19.2` / `31902` |
+| minSdkVersion / targetSdkVersion | `19` / `33` |
+| Application / appComponentFactory | `s.h.e.l.l.S` / `s.h.e.l.l.A` |
+| Entradas ZIP | 3.170 |
+
+O tamanho coincide com o informado pela página, mas a versão do manifesto
+diverge de 4.14.1. O package ID e os nomes das Activities apontam para uma
+edição mobile. Não foi confirmada sua equivalência à edição de televisão,
+sua procedência oficial ou sua segurança.
+
+O manifesto declara Activities Android para login, catálogo, reprodução e
+WebView, como `com.mobile.brasiltv.activity.MainAty`, `PlayAty`, `WebViewAty`
+e `com.mobile.brasiltv.mine.activity.LoginAty`. A existência de `WebViewAty`
+não demonstra que o catálogo e o player sejam um aplicativo web.
+
+Não foram encontradas entradas com extensões `.html`, `.htm`, `.js`,
+`.bundle` ou `.css` no ZIP. Há bibliotecas Android para `armeabi-v7a` e
+`arm64-v8a`, incluindo `libijkplayer.so`, `libijkffmpeg.so` e `libijksdl.so`.
+Compartilhar a arquitetura ARM com o Fire Stick não torna essas bibliotecas
+compatíveis com os serviços e o runtime do Vega.
+
+Os nomes `s.h.e.l.l.*`, `assets/ijiami.dat`, `assets/ijiami.ajm` e
+`libijmDataEncryption*.so` são indícios de empacotamento/proteção de código.
+O ZIP possui um `classes.dex` de 2.500.148 bytes. A inspeção simples desse
+DEX não revelou marcadores de WebView/React Native/Flutter, mas isso não
+exclui seu uso em código protegido ou carregado posteriormente. Nenhuma
+tentativa de contornar essa proteção foi realizada.
+
+Conclusão limitada a este arquivo: não há um frontend web exposto no pacote
+que possa ser copiado diretamente para o VegaPlayer. Para avançar de forma
+fundamentada, precisamos identificar uma interface web funcional do mesmo
+serviço, uma integração documentada ou código-fonte para porte. Esta análise
+não equivale a um teste de execução ou a uma auditoria de segurança.
